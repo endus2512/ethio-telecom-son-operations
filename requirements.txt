@@ -15,4 +15,3 @@ SQLAlchemy==2.0.40
 streamlit==1.50.0
 streamlit-folium==0.25.1
 uvicorn==0.34.0
-psycopg[binary]==3.2.6
