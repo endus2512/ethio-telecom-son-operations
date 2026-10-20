@@ -8,7 +8,7 @@ import hmac
 import math
 import re
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Protocol
 from xml.sax.saxutils import escape
 
 from ncclient import manager
@@ -24,6 +24,37 @@ TOWER_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
 
 class NetworkDriverError(RuntimeError):
     """Raised when a network change cannot be validated or delivered."""
+
+
+class ControlDriver(Protocol):
+    """Interface for controlled network actions."""
+
+    def execute_simulated(
+        self, cell_id: str, action_type: str, parameters: dict[str, Any]
+    ) -> dict[str, str]: ...
+
+
+class SimulatedControlDriver:
+    """Produce auditable dry-run output without opening a network connection."""
+
+    def execute_simulated(
+        self, cell_id: str, action_type: str, parameters: dict[str, Any]
+    ) -> dict[str, str]:
+        if not re.fullmatch(r"SIM-ADD-00[1-6]", cell_id):
+            raise NetworkDriverError("Simulated driver accepts synthetic cell IDs only.")
+        if action_type != "load_balancing":
+            raise NetworkDriverError("Unsupported simulated optimization action.")
+        offload = parameters.get("offload_percent")
+        if not isinstance(offload, int | float) or not math.isfinite(float(offload)):
+            raise NetworkDriverError("Simulated offload_percent must be finite and numeric.")
+        if not 1 <= float(offload) <= 40:
+            raise NetworkDriverError("Simulated offload_percent must be between 1 and 40.")
+        log = (
+            f"SIMULATION ONLY: Connected to eNodeB_{cell_id} (no network connection) "
+            f"-> Would execute load-balancing offload {float(offload):g}% "
+            "-> Simulated status OK"
+        )
+        return {"status": "simulated_ok", "execution_log": log}
 
 
 class NetconfDriver:

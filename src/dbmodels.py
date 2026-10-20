@@ -87,6 +87,71 @@ class KpiMetric(Base):
     )
 
 
+class SimulatedKpiHistory(Base):
+    """Timestamp-partition-friendly store for the isolated simulation feed."""
+
+    __tablename__ = "simulated_kpi_history"
+    __table_args__ = (
+        Index("ix_sim_kpi_timestamp", "timestamp"),
+    )
+
+    tower_id: Mapped[str] = mapped_column(
+        ForeignKey("towers.tower_id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), primary_key=True
+    )
+    connected_users: Mapped[int] = mapped_column(Integer, nullable=False)
+    prb_usage_pct: Mapped[float] = mapped_column(Float, nullable=False)
+    throughput_mbps: Mapped[float] = mapped_column(Float, nullable=False)
+    latency_ms: Mapped[float] = mapped_column(Float, nullable=False)
+    call_drop_rate_pct: Mapped[float] = mapped_column(Float, nullable=False)
+    hardware_status: Mapped[str] = mapped_column(String(32), nullable=False)
+    received_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class SimulationAnomaly(Base):
+    __tablename__ = "simulation_anomalies"
+    __table_args__ = (
+        Index("ix_sim_anomaly_detected", "detected_at"),
+        Index("ix_sim_anomaly_tower_open", "tower_id", "resolved_at"),
+    )
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    tower_id: Mapped[str] = mapped_column(
+        ForeignKey("towers.tower_id", ondelete="CASCADE"), nullable=False
+    )
+    detected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    severity: Mapped[str] = mapped_column(String(32), nullable=False)
+    detail: Mapped[str] = mapped_column(Text, nullable=False)
+    source: Mapped[str] = mapped_column(String(32), nullable=False, default="simulated")
+
+
+class SimulatedControlAction(Base):
+    __tablename__ = "simulated_control_actions"
+    __table_args__ = (
+        Index("ix_sim_control_created", "created_at"),
+        Index("ix_sim_control_tower_created", "tower_id", "created_at"),
+    )
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    tower_id: Mapped[str] = mapped_column(
+        ForeignKey("towers.tower_id", ondelete="CASCADE"), nullable=False
+    )
+    actor: Mapped[str] = mapped_column(String(100), nullable=False)
+    action_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    parameters: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    execution_log: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
 class FaultEvent(Base):
     __tablename__ = "fault_events"
     __table_args__ = (

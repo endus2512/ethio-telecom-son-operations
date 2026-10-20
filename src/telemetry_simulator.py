@@ -26,7 +26,7 @@ def _status_for(traffic: float, drop_rate: float, latency: float) -> str:
 
 def create_simulated_telemetry() -> list[dict[str, Any]]:
     """Return synthetic Addis Ababa cell readings; no database is accessed."""
-    timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    timestamp = datetime.now(timezone.utc).isoformat(timespec="microseconds")
     sites: list[dict[str, Any]] = []
     for index, (lat, lon, traffic, drop, latency, throughput, users) in enumerate(
         SIMULATED_CELLS, start=1
@@ -56,7 +56,7 @@ def refresh_simulated_telemetry(
 ) -> list[dict[str, Any]]:
     """Advance synthetic KPIs by one interval and return the updated site list."""
     randomizer = rng or random
-    timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    timestamp = datetime.now(timezone.utc).isoformat(timespec="microseconds")
     for site in sites:
         optimized = bool(site.get("optimized"))
         traffic_floor, traffic_ceiling = (45.0, 70.0) if optimized else (15.0, 99.0)
@@ -119,7 +119,7 @@ def simulate_self_healing(
             "latency_ms": 62.0,
             "throughput_mbps": round(max(95.0, float(site["throughput_mbps"]) * 1.8), 1),
             "hardware_status": "Optimal",
-            "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "timestamp": datetime.now(timezone.utc).isoformat(timespec="microseconds"),
             "optimized": True,
         }
     )

@@ -50,6 +50,17 @@ Joblib persistence. The in-process ML cache is rebuilt from PostgreSQL after
 restart or telemetry change; the backend is intentionally configured with one
 worker to keep that cache coherent.
 
+The optional dashboard simulation writes synthetic samples to the same
+SQLite/PostgreSQL database in a dedicated `simulated_kpi_history` table whose
+composite primary key includes its timestamp. Simulated anomaly intervals and
+controller dry-run logs are stored separately. Migration
+`002_simulation_history` creates the PostgreSQL tables; SQLite local startup
+creates them from the SQLAlchemy models. The simulation KPI table is structured
+for future TimescaleDB hypertable conversion, but this project does not enable
+TimescaleDB extensions or convert tables to hypertables. The simulated driver
+never makes a device connection. Live configuration continues to use the
+separately guarded approval/confirmed-commit NETCONF workflow.
+
 ## Operations dashboard
 
 The authenticated Streamlit dashboard includes a network overview, an

@@ -23,7 +23,6 @@ from streamlit_folium import st_folium
 from src.telemetry_simulator import (
     create_simulated_telemetry,
     refresh_simulated_telemetry,
-    simulate_self_healing,
 )
 
 API_URL = os.environ.get("SON_API_URL", "http://localhost:8000").rstrip("/")
@@ -203,29 +202,54 @@ def _tower_map(rows: list[dict[str, Any]]) -> None:
     st_folium(map_view, width=None, height=520, returned_objects=[])
 
 
-def _simulated_live_panel(live_mode: bool, role: str, username: str) -> None:
-    """Show session-only simulated streaming and role-gated self-healing demos."""
+def _simulated_live_panel(
+    token: str, live_mode: bool, role: str, username: str
+) -> None:
+    """Show persistent synthetic telemetry and role-gated simulated control."""
     st.warning(
-        "Simulation only: these generated readings and optimization results are "
-        "stored in this Streamlit session. Nothing is sent to a network device or database."
+        "Simulation only: telemetry and simulated control events are persisted in the "
+        "application database. The simulated driver never connects to network equipment."
     )
     if "son_simulated_telemetry" not in st.session_state:
-        st.session_state["son_simulated_telemetry"] = create_simulated_telemetry()
-    if "son_simulated_actions" not in st.session_state:
-        st.session_state["son_simulated_actions"] = []
+        persisted = api_request("GET", "/v1/simulation/latest", token)
+        if persisted is None:
+            return
+        sites = persisted or create_simulated_telemetry()
+        st.session_state["son_simulated_telemetry"] = sites
+        if not persisted:
+            result = api_request(
+                "POST",
+                "/v1/simulation/telemetry",
+                token,
+                {"records": _simulated_payload(sites)},
+            )
+            if result is None:
+                return
 
-    @st.fragment(run_every=5 if live_mode else None)
+    @st.fragment(run_every=30 if live_mode else None)
     def render_simulation() -> None:
         sites = st.session_state["son_simulated_telemetry"]
         if live_mode:
             refresh_simulated_telemetry(sites)
+            api_request(
+                "POST",
+                "/v1/simulation/telemetry",
+                token,
+                {"records": _simulated_payload(sites)},
+            )
         st.caption(
-            "Live Simulation Mode is on — KPI values refresh every 5 seconds."
+            "Live Simulation Mode is on — generated KPI values are saved every 30 seconds."
             if live_mode
             else "Live Simulation Mode is off. Turn it on in the sidebar or refresh manually."
         )
         if not live_mode and st.button("Refresh simulated feed", key="refresh-simulated-feed"):
             refresh_simulated_telemetry(sites)
+            api_request(
+                "POST",
+                "/v1/simulation/telemetry",
+                token,
+                {"records": _simulated_payload(sites)},
+            )
 
         simulated_frame = pd.DataFrame(sites)
         st.dataframe(
@@ -264,24 +288,128 @@ def _simulated_live_panel(live_mode: bool, role: str, username: str) -> None:
                 key="simulated-healing-cell",
             )
             if st.button("Run Self-Healing / Optimize", type="primary"):
-                try:
-                    action = simulate_self_healing(sites, selected_cell, username)
-                except ValueError as exc:
-                    st.error(str(exc))
-                else:
-                    st.session_state["son_simulated_actions"].insert(0, action)
+                action = api_request(
+                    "POST",
+                    "/v1/simulation/actions",
+                    token,
+                    {"cell_id": selected_cell},
+                )
+                if action:
+                    current = next(row for row in sites if row["tower_id"] == selected_cell)
+                    current.update(action["telemetry"])
                     st.success(
                         f"{selected_cell} simulated optimization completed. "
-                        "The result is not applied to a live network."
+                        "No network device was contacted."
                     )
-
-        for action in st.session_state["son_simulated_actions"][:10]:
-            st.caption(
-                f"{action['occurred_at']} · {action['actor']} · {action['cell_id']} · "
-                f"{action['result']} · simulation only"
-            )
+                    st.code(action["execution_log"], language=None)
 
     render_simulation()
+
+
+def _simulated_payload(sites: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    fields = (
+        "tower_id",
+        "region",
+        "latitude",
+        "longitude",
+        "timestamp",
+        "connected_users",
+        "prb_usage_pct",
+        "throughput_mbps",
+        "latency_ms",
+        "call_drop_rate_pct",
+        "hardware_status",
+    )
+    return [{field: site[field] for field in fields} for site in sites]
+
+
+def _simulation_history_panel(token: str) -> None:
+    """Display hourly trend, stability and persisted anomaly/control history."""
+    st.subheader("Historical simulation analytics")
+    st.caption(
+        "Hourly aggregates are read from the persistent KPI database; all records "
+        "shown here are synthetic simulation data."
+    )
+    days = st.select_slider(
+        "History window",
+        options=[1, 3, 7, 14, 30],
+        value=7,
+        format_func=lambda value: f"{value} day" if value == 1 else f"{value} days",
+        key="simulation-history-days",
+    )
+    if (
+        st.button("Refresh historical analytics", key="refresh-simulation-history")
+        or st.session_state.get("simulation_history_days") != days
+    ):
+        history = api_request(
+            "GET",
+            "/v1/simulation/history",
+            token,
+            params={"days": days},
+        )
+        if history is not None:
+            st.session_state["simulation_history"] = history
+            st.session_state["simulation_history_days"] = days
+
+    history = st.session_state.get("simulation_history")
+    if not history or st.session_state.get("simulation_history_days") != days:
+        st.info("No persisted simulated history is available yet.")
+        return
+    trends = pd.DataFrame(history["trends"])
+    anomalies = pd.DataFrame(history["anomalies"])
+    if trends.empty:
+        st.info("No simulated KPI samples fall within the selected period.")
+    else:
+        stability = (
+            (
+                trends["sample_count"]
+                - trends["critical_count"]
+                - 0.4 * trends["warning_count"]
+            )
+            .clip(lower=0)
+            .div(trends["sample_count"].replace(0, 1))
+            .mul(100)
+        )
+        col1, col2, col3 = st.columns(3)
+        resolved = int(anomalies["resolved_at"].notna().sum()) if not anomalies.empty else 0
+        total = len(anomalies)
+        col1.metric(
+            "Anomaly resolution rate",
+            f"{100 * resolved / total:.1f}%" if total else "N/A",
+        )
+        col2.metric("Resolved / total anomalies", f"{resolved} / {total}")
+        col3.metric("Mean network stability", f"{stability.mean():.1f}/100")
+        trends["network_stability_index"] = stability.round(1)
+        st.markdown("#### Hourly KPI trends")
+        chart_col1, chart_col2 = st.columns(2)
+        with chart_col1:
+            st.line_chart(
+                trends.set_index("timestamp")["traffic_load_pct"],
+                y_label="Mean traffic load (%)",
+            )
+            st.line_chart(
+                trends.set_index("timestamp")["latency_ms"],
+                y_label="Mean latency (ms)",
+            )
+        with chart_col2:
+            st.line_chart(
+                trends.set_index("timestamp")["drop_rate_pct"],
+                y_label="Mean call drop rate (%)",
+            )
+            st.line_chart(
+                trends.set_index("timestamp")["throughput_mbps"],
+                y_label="Mean throughput (Mbps)",
+            )
+        st.markdown("#### Network stability index")
+        st.line_chart(
+            trends.set_index("timestamp")["network_stability_index"],
+            y_label="Stability index (0–100)",
+        )
+    st.markdown("#### Anomaly resolution events")
+    st.dataframe(anomalies, width="stretch", hide_index=True)
+    actions = pd.DataFrame(history["actions"])
+    st.markdown("#### Simulated driver execution log")
+    st.dataframe(actions, width="stretch", hide_index=True)
 
 
 def _health_summary(dataframe: pd.DataFrame) -> tuple[pd.Series, pd.Series, float]:
@@ -608,6 +736,7 @@ def main() -> None:
             "Fault Management",
             "SON Actions",
             "Live Simulation & Self-Healing",
+            "Historical Analytics",
         ]
     )
     with tabs[0]:
@@ -723,7 +852,9 @@ def main() -> None:
     with tabs[5]:
         _action_controls(token, role, username, towers, actions)
     with tabs[6]:
-        _simulated_live_panel(live_mode, role, username)
+        _simulated_live_panel(token, live_mode, role, username)
+    with tabs[7]:
+        _simulation_history_panel(token)
     if role == ROLE_ADMIN:
         with st.expander("System administration"):
             st.markdown("#### Create user")
