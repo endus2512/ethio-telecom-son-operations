@@ -50,6 +50,16 @@ Joblib persistence. The in-process ML cache is rebuilt from PostgreSQL after
 restart or telemetry change; the backend is intentionally configured with one
 worker to keep that cache coherent.
 
+## Operations dashboard
+
+The authenticated Streamlit dashboard includes a network overview, an
+interactive tower map, backend Isolation Forest anomaly diagnostics, fault and
+SON change workflows, and CSV/PDF exports of the latest KPI snapshot. Addis
+Ababa sample map cells are optional, explicitly synthetic overlays and are not
+saved to inventory or represented as live sites. The Telegram, webhook, and
+email alert formats are previews only; the dashboard does not send external
+alerts.
+
 ## Files
 
 ```text
