@@ -22,10 +22,26 @@ from src.dbmodels import FaultEvent, KpiMetric, OptimizationAction, Tower, User
 from src.ingestion import parse_feed
 from src.network_driver import NetconfDriver, NetworkDriverError
 from src.security import Role, hash_password
-from src.settings import settings
+from src.settings import Settings, settings
 
 
 class SONCoreTests(unittest.TestCase):
+    def test_render_postgres_urls_are_normalized_for_psycopg(self) -> None:
+        for database_url in (
+            "postgres://son:secret@db.example/son",
+            "postgresql://son:secret@db.example/son",
+            "postgresql+psycopg://son:secret@db.example/son",
+        ):
+            with self.subTest(database_url=database_url.split(":", 1)[0]):
+                configured = Settings(
+                    database_url=database_url,
+                    jwt_secret="unit-test-signing-key-never-use-in-prod-000000",
+                )
+                self.assertEqual(
+                    configured.database_url,
+                    "postgresql+psycopg://son:secret@db.example/son",
+                )
+
     def setUp(self) -> None:
         self.engine = create_engine(
             "sqlite+pysqlite:///:memory:",

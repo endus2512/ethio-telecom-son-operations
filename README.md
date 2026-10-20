@@ -123,8 +123,8 @@ observations, and is never mixed into a database that already has telemetry.
 Local configuration and database files are created with owner-only permissions.
 
 SQLite and seeded synthetic data are for local evaluation only. Use the
-PostgreSQL Docker setup below for deployment; the NETCONF control path remains
-disabled unless explicitly configured and operationally validated.
+PostgreSQL Docker or Render setup for hosted deployments; the NETCONF control
+path remains disabled unless explicitly configured and operationally validated.
 
 ## Local Docker startup
 
@@ -180,6 +180,43 @@ Administrators create other users in the dashboard or the secured user API.
 Login access tokens expire after 20 minutes. Accounts are locked for 15 minutes
 after five consecutive failed logins. A disabled user is rejected on every API
 request, even with an otherwise unexpired token.
+
+## Deploy to Render
+
+The `render.yaml` Blueprint deploys one free Python web service for the FastAPI
+backend. It uses local SQLite (`sqlite:///./son-local.db`), runs migrations
+before startup, and exposes `/health/ready` as its health check. Render
+generates the JWT signing secret; live NETCONF remains disabled. No database,
+dashboard, or other paid add-on is defined in this Blueprint.
+
+1. Push this repository to GitHub.
+2. In Render, choose **New → Blueprint**, connect the repository, and apply
+   the Blueprint. It defines only the Free web service.
+3. Wait for the web service to report healthy. Its readiness URL is
+   `https://<service-host>/health/ready`.
+4. From the service's Render Shell, create the first administrator. Use a
+   unique username; the command prompts for the password without placing it in
+   shell history:
+
+   ```bash
+   python -m src.cli create-user --username admin --role system_admin
+   ```
+
+5. Use the API with that account. Create separate operator and supervisor
+   accounts through the authenticated user API before connecting approved
+   telemetry sources.
+
+The Free service uses a local SQLite file as requested. Render Free web-service
+filesystems are ephemeral, so the database file may be lost on redeploy,
+restart, or service replacement. This setup is suitable for demonstrations,
+not durable production data. The `psycopg[binary]` dependency remains pinned
+once in `requirements.txt` to support other deployment targets; the Render
+service does not configure or connect to PostgreSQL. Do not publish or paste
+generated secrets into source control.
+
+The API enforces authentication and role checks; only health checks and login
+are unauthenticated. A successful Free-tier deployment does not certify the
+application for live network control.
 
 ## PM/FM ingestion
 

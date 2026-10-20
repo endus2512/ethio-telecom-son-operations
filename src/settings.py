@@ -34,10 +34,14 @@ class Settings(BaseSettings):
     @field_validator("database_url")
     @classmethod
     def validate_database_url(cls, value: str) -> str:
-        """Allow PostgreSQL in deployments and SQLite for local development."""
+        """Normalize Render/PostgreSQL URLs and allow SQLite for local development."""
+        if value.startswith("postgres://"):
+            return value.replace("postgres://", "postgresql+psycopg://", 1)
+        if value.startswith("postgresql://"):
+            return value.replace("postgresql://", "postgresql+psycopg://", 1)
         if not value.startswith(("postgresql+psycopg://", "sqlite:///")):
             raise ValueError(
-                "DATABASE_URL must use postgresql+psycopg:// or sqlite:///."
+                "DATABASE_URL must use a PostgreSQL URL or sqlite:///."
             )
         return value
 

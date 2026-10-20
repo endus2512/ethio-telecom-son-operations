@@ -5,8 +5,9 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: python -m src.migrate && uvicorn src.api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health/ready
     envVars:
       - key: SON_DATABASE_URL
         value: sqlite:///./son-local.db
       - key: SON_JWT_SECRET
-        value: 09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+        generateValue: true

@@ -26,6 +26,8 @@ from src.telemetry_simulator import (
 )
 
 API_URL = os.environ.get("SON_API_URL", "http://localhost:8000").rstrip("/")
+if "://" not in API_URL:
+    API_URL = f"https://{API_URL}"
 ROLE_ENGINEER = "network_engineer"
 ROLE_SUPERVISOR = "noc_supervisor"
 ROLE_ADMIN = "system_admin"
