@@ -95,7 +95,21 @@ def login_panel() -> None:
             st.session_state["son_username"] = username
             st.rerun()
         except requests.RequestException as exc:
-            st.error("Sign-in failed. Check service availability and credentials.")
+            if exc.response is None:
+                st.error(
+                    "Cannot reach the SON authentication API. Start the local services "
+                    "with `bash run_local.sh`, then retry."
+                )
+            elif exc.response.status_code == 401:
+                st.error(
+                    "The API rejected the sign-in. Check the username/password, and "
+                    "confirm the account is enabled and not temporarily locked."
+                )
+            else:
+                st.error(
+                    f"Authentication API returned HTTP {exc.response.status_code}. "
+                    "Check API readiness and server logs."
+                )
         except (KeyError, ValueError):
             st.error("Authentication service returned an invalid response.")
 
