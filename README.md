@@ -58,7 +58,9 @@ SON change workflows, and CSV/PDF exports of the latest KPI snapshot. Addis
 Ababa sample map cells are optional, explicitly synthetic overlays and are not
 saved to inventory or represented as live sites. The Telegram, webhook, and
 email alert formats are previews only; the dashboard does not send external
-alerts.
+alerts. The Live Simulation & Self-Healing section produces session-only
+synthetic KPI fluctuations, and role-gated optimization affects only those
+in-memory samples; it never executes a live network action.
 
 ## Files
 

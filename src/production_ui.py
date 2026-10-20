@@ -20,6 +20,12 @@ from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from streamlit_folium import st_folium
 
+from src.telemetry_simulator import (
+    create_simulated_telemetry,
+    refresh_simulated_telemetry,
+    simulate_self_healing,
+)
+
 API_URL = os.environ.get("SON_API_URL", "http://localhost:8000").rstrip("/")
 ROLE_ENGINEER = "network_engineer"
 ROLE_SUPERVISOR = "noc_supervisor"
@@ -165,8 +171,8 @@ def _tower_map(rows: list[dict[str, Any]]) -> None:
         color = "#d62828" if critical else "#f2b705" if degraded else "#00813d"
         health = "Critical" if critical else "Warning" if degraded else "Normal"
         source_note = (
-            "<br><b>Illustrative synthetic sample — not live network data</b>"
-            if row.get("source") == "illustrative-synthetic"
+            "<br><b>Synthetic simulation — not live network data</b>"
+            if str(row.get("source", "")).startswith("illustrative-synthetic")
             else ""
         )
         popup = folium.Popup(
@@ -195,6 +201,87 @@ def _tower_map(rows: list[dict[str, Any]]) -> None:
             popup=popup,
         ).add_to(map_view)
     st_folium(map_view, width=None, height=520, returned_objects=[])
+
+
+def _simulated_live_panel(live_mode: bool, role: str, username: str) -> None:
+    """Show session-only simulated streaming and role-gated self-healing demos."""
+    st.warning(
+        "Simulation only: these generated readings and optimization results are "
+        "stored in this Streamlit session. Nothing is sent to a network device or database."
+    )
+    if "son_simulated_telemetry" not in st.session_state:
+        st.session_state["son_simulated_telemetry"] = create_simulated_telemetry()
+    if "son_simulated_actions" not in st.session_state:
+        st.session_state["son_simulated_actions"] = []
+
+    @st.fragment(run_every=5 if live_mode else None)
+    def render_simulation() -> None:
+        sites = st.session_state["son_simulated_telemetry"]
+        if live_mode:
+            refresh_simulated_telemetry(sites)
+        st.caption(
+            "Live Simulation Mode is on — KPI values refresh every 5 seconds."
+            if live_mode
+            else "Live Simulation Mode is off. Turn it on in the sidebar or refresh manually."
+        )
+        if not live_mode and st.button("Refresh simulated feed", key="refresh-simulated-feed"):
+            refresh_simulated_telemetry(sites)
+
+        simulated_frame = pd.DataFrame(sites)
+        st.dataframe(
+            simulated_frame[
+                [
+                    "tower_id",
+                    "region",
+                    "hardware_status",
+                    "prb_usage_pct",
+                    "call_drop_rate_pct",
+                    "latency_ms",
+                    "throughput_mbps",
+                    "connected_users",
+                    "timestamp",
+                ]
+            ],
+            width="stretch",
+            hide_index=True,
+        )
+        _tower_map(sites)
+
+        degraded_ids = [
+            row["tower_id"]
+            for row in sites
+            if row["hardware_status"] != "Optimal"
+        ]
+        st.markdown("#### Closed-loop self-healing (simulation)")
+        if not degraded_ids:
+            st.success("All simulated cells are within normal KPI thresholds.")
+        elif role not in {ROLE_SUPERVISOR, ROLE_ADMIN}:
+            st.info("Self-healing simulation requires NOC supervisor or system admin access.")
+        else:
+            selected_cell = st.selectbox(
+                "Critical or warning simulated cell",
+                degraded_ids,
+                key="simulated-healing-cell",
+            )
+            if st.button("Run Self-Healing / Optimize", type="primary"):
+                try:
+                    action = simulate_self_healing(sites, selected_cell, username)
+                except ValueError as exc:
+                    st.error(str(exc))
+                else:
+                    st.session_state["son_simulated_actions"].insert(0, action)
+                    st.success(
+                        f"{selected_cell} simulated optimization completed. "
+                        "The result is not applied to a live network."
+                    )
+
+        for action in st.session_state["son_simulated_actions"][:10]:
+            st.caption(
+                f"{action['occurred_at']} · {action['actor']} · {action['cell_id']} · "
+                f"{action['result']} · simulation only"
+            )
+
+    render_simulation()
 
 
 def _health_summary(dataframe: pd.DataFrame) -> tuple[pd.Series, pd.Series, float]:
@@ -472,6 +559,11 @@ def main() -> None:
         st.markdown("### Network Operations")
         st.write(username)
         st.caption(role.replace("_", " ").title())
+        live_mode = st.toggle(
+            "Live Simulation Mode",
+            value=False,
+            help="Refreshes generated demo KPIs every five seconds; this is not a live feed.",
+        )
         if st.button("Refresh telemetry"):
             st.rerun()
         if st.button("Sign out"):
@@ -515,6 +607,7 @@ def main() -> None:
             "Reports & Exports",
             "Fault Management",
             "SON Actions",
+            "Live Simulation & Self-Healing",
         ]
     )
     with tabs[0]:
@@ -629,6 +722,8 @@ def main() -> None:
         st.dataframe(pd.DataFrame(faults), width="stretch", hide_index=True)
     with tabs[5]:
         _action_controls(token, role, username, towers, actions)
+    with tabs[6]:
+        _simulated_live_panel(live_mode, role, username)
     if role == ROLE_ADMIN:
         with st.expander("System administration"):
             st.markdown("#### Create user")
