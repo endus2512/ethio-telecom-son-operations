@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from functools import cached_property
+import secrets
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,8 +16,18 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", env_prefix="SON_", extra="ignore"
     )
 
-    database_url: str = Field(min_length=1)
-    jwt_secret: SecretStr = Field(min_length=32)
+    database_url: str = Field(
+        default="sqlite:///./son-local.db",
+        min_length=1,
+        validation_alias=AliasChoices(
+            "SON_DATABASE_URL", "DATABASE_URL", "database_url"
+        ),
+    )
+    jwt_secret: SecretStr = Field(
+        default_factory=lambda: SecretStr(secrets.token_urlsafe(32)),
+        min_length=32,
+        validation_alias=AliasChoices("SON_JWT_SECRET", "JWT_SECRET", "jwt_secret"),
+    )
     jwt_issuer: str = "ethio-telecom-son"
     access_token_minutes: int = Field(default=20, ge=5, le=60)
     cors_origins: str = "http://localhost:8501"

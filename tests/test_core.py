@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import unittest
+from unittest.mock import patch
 
 os.environ.setdefault(
     "SON_DATABASE_URL", "postgresql+psycopg://son:test@127.0.0.1:5432/son"
@@ -26,6 +27,35 @@ from src.settings import Settings, settings
 
 
 class SONCoreTests(unittest.TestCase):
+    def test_settings_have_safe_fallbacks_when_environment_is_missing(self) -> None:
+        with patch.dict(os.environ, {}, clear=True):
+            first = Settings(_env_file=None)
+            second = Settings(_env_file=None)
+
+        self.assertEqual(first.database_url, "sqlite:///./son-local.db")
+        self.assertGreaterEqual(len(first.jwt_secret.get_secret_value()), 32)
+        self.assertNotEqual(
+            first.jwt_secret.get_secret_value(),
+            second.jwt_secret.get_secret_value(),
+        )
+
+    def test_settings_accept_unprefixed_environment_aliases(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                "DATABASE_URL": "sqlite:///./alias.db",
+                "JWT_SECRET": "alternative-env-signing-secret-with-32-chars",
+            },
+            clear=True,
+        ):
+            configured = Settings(_env_file=None)
+
+        self.assertEqual(configured.database_url, "sqlite:///./alias.db")
+        self.assertEqual(
+            configured.jwt_secret.get_secret_value(),
+            "alternative-env-signing-secret-with-32-chars",
+        )
+
     def test_render_postgres_urls_are_normalized_for_psycopg(self) -> None:
         for database_url in (
             "postgres://son:secret@db.example/son",
