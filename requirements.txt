@@ -16,5 +16,13 @@ sqlalchemy==2.0.40
 streamlit==1.50.0
 streamlit-folium==0.25.1
 uvicorn==0.34.0
+streamlit
+pandas
+sqlalchemy
+fastapi
+uvicorn
+pydantic
+requests
 folium
 streamlit-folium
+
