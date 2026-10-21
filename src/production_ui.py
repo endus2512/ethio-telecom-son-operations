@@ -32,6 +32,155 @@ ROLE_ENGINEER = "network_engineer"
 ROLE_SUPERVISOR = "noc_supervisor"
 ROLE_ADMIN = "system_admin"
 
+ETHIO_TELECOM_CUSTOM_STYLE = """
+<style>
+    .stApp {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h1, h2, h3 {
+        color: #00843D !important;
+        font-weight: 700;
+    }
+
+    div[data-testid="stMetric"] {
+        background-color: #ffffff;
+        border-left: 5px solid #00843D;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    div[data-testid="stMetric"]:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .stButton > button {
+        background: linear-gradient(135deg, #00843D 0%, #006b31 100%);
+        color: #ffffff;
+        border-radius: 8px;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0, 132, 61, 0.25);
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #006b31 0%, #005225 100%);
+        color: #ffffff;
+        box-shadow: 0 6px 14px rgba(0, 132, 61, 0.35);
+    }
+
+    .stTextInput > div > div > input,
+    .stSelectbox > div > div > div {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        background-color: #ffffff;
+    }
+    .stTextInput > div > div > input:focus {
+        border-color: #00843D;
+        box-shadow: 0 0 0 2px rgba(0, 132, 61, 0.2);
+    }
+
+    [data-testid="stSidebar"] {
+        background-color: #ffffff;
+        border-right: 1px solid #e9ecef;
+    }
+</style>
+"""
+
+ETHIO_TELECOM_LOGIN_STYLE = """
+<style>
+    .stApp {
+        background: linear-gradient(135deg, #eef5f0 0%, #d8e8dd 100%);
+        font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    header, footer {
+        visibility: hidden;
+    }
+
+    div[data-testid="stForm"] {
+        max-width: 440px;
+        margin: auto;
+        padding: 35px 30px;
+        border: 1px solid #d4e3d7;
+        border-top: 8px solid #00843D;
+        border-radius: 16px;
+        background-color: #ffffff;
+        box-shadow: 0 12px 30px rgba(0, 132, 61, 0.15),
+            0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .login-header {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .login-title {
+        color: #00843D;
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
+    }
+    .login-subtitle {
+        color: #4a574d;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    div[data-testid="stForm"] .stTextInput > div > div > input {
+        padding: 10px 14px;
+        border: 1.5px solid #c5d3c8;
+        border-radius: 8px;
+        background-color: #fcfdfe;
+        font-size: 14px;
+    }
+    div[data-testid="stForm"] .stTextInput > div > div > input:focus {
+        border-color: #00843D;
+        box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.18);
+    }
+
+    div[data-testid="stForm"] .stButton > button {
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        padding: 12px 0;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #b9ddc2 0%, #a5d1b1 100%);
+        box-shadow: 0 4px 12px rgba(63, 125, 82, 0.18);
+        color: #17452a;
+        font-size: 16px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+    div[data-testid="stForm"] .stButton > button:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(135deg, #a5d1b1 0%, #91c5a0 100%);
+        box-shadow: 0 6px 16px rgba(63, 125, 82, 0.24);
+        color: #17452a;
+    }
+    div[data-testid="stForm"] button[kind="primaryFormSubmit"] {
+        background: linear-gradient(135deg, #ffe9a8 0%, #ffd66e 100%) !important;
+        box-shadow: 0 4px 12px rgba(115, 83, 0, 0.2);
+        color: #17452a !important;
+    }
+    div[data-testid="stForm"] button[kind="primaryFormSubmit"]:hover {
+        background: linear-gradient(135deg, #ffdc7a 0%, #f4c34b 100%) !important;
+        box-shadow: 0 6px 16px rgba(115, 83, 0, 0.26);
+        color: #17452a !important;
+    }
+
+    div[data-testid="stForm"] hr {
+        margin: 15px 0 10px;
+        border-color: #e1e8e3;
+    }
+</style>
+"""
+
 ADDIS_DEMO_CELLS = (
     (9.019, 38.752, 64.0, 1.1, 58.0, 112.0, 540, "Optimal"),
     (9.034, 38.761, 78.0, 2.2, 83.0, 76.0, 720, "Optimal"),
@@ -77,12 +226,33 @@ def api_request(
 
 def login_panel() -> None:
     """Authenticate a named user and keep the short-lived token session-scoped."""
-    st.title("Ethio Telecom SON Operations")
-    st.caption("Sign in using your network operations account.")
-    with st.form("login"):
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        submitted = st.form_submit_button("Sign in", type="primary")
+    st.markdown(ETHIO_TELECOM_LOGIN_STYLE, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("login"):
+            st.markdown(
+                """
+                <div class="login-header">
+                    <div class="login-title">ethio telecom</div>
+                    <div class="login-subtitle">Network Operations Portal</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            username = st.text_input(
+                "Username / Corporate ID",
+                placeholder="Enter your username or corporate ID",
+            )
+            password = st.text_input(
+                "Password", type="password", placeholder="Enter your password"
+            )
+            submitted = st.form_submit_button("Sign In", type="primary")
+            st.markdown("<hr>", unsafe_allow_html=True)
+            utility_col1, utility_col2 = st.columns(2)
+            with utility_col1:
+                forgot_pwd = st.form_submit_button("Forgot Password?")
+            with utility_col2:
+                noc_support = st.form_submit_button("NOC Support")
     if submitted:
         try:
             response = requests.post(
@@ -114,6 +284,12 @@ def login_panel() -> None:
                 )
         except (KeyError, ValueError):
             st.error("Authentication service returned an invalid response.")
+    elif forgot_pwd:
+        st.info("Contact your system administrator to reset your password.")
+    elif noc_support:
+        st.info(
+                "Contact the NOC helpdesk using your approved internal support channel."
+        )
 
 
 def _illustrative_addis_cells() -> list[dict[str, Any]]:
@@ -692,6 +868,7 @@ def main() -> None:
         layout="wide",
         initial_sidebar_state="expanded",
     )
+    st.markdown(ETHIO_TELECOM_CUSTOM_STYLE, unsafe_allow_html=True)
     token = st.session_state.get("son_token")
     if not token:
         login_panel()
