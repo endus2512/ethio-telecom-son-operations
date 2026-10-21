@@ -1,0 +1,22 @@
+[theme]
+base = "light"
+primaryColor = "#00843D"
+backgroundColor = "#F4F8F5"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#111827"
+font = "Inter, -apple-system, sans-serif"
+baseRadius = "0.65rem"
+buttonRadius = "0.55rem"
+borderColor = "#E1ECE3"
+dataframeBorderColor = "#E1ECE3"
+dataframeHeaderBackgroundColor = "#F0FDF4"
+showWidgetBorder = true
+showSidebarBorder = true
+chartCategoricalColors = [
+  "#00843D",
+  "#FFC72C",
+  "#4A8F6A",
+  "#C47728",
+  "#547A69",
+  "#8CA83D",
+]

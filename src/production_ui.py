@@ -34,59 +34,502 @@ ROLE_ADMIN = "system_admin"
 
 ETHIO_TELECOM_CUSTOM_STYLE = """
 <style>
+    :root {
+        --son-green: #00843D;
+        --son-gold: #FFC72C;
+        --son-ink: #111827;
+        --son-muted: #4B6352;
+        --son-canvas: #F4F8F5;
+        --son-canvas-end: #E6F0E9;
+        --son-card: #FFFFFF;
+        --son-border: #D5E5D9;
+        --son-mint: #F0FDF4;
+    }
+
     .stApp {
-        background-color: #f4f6f9;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, var(--son-canvas), var(--son-canvas-end)) !important;
+        color: var(--son-ink) !important;
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    [data-testid="stHeader"] {
+        background: transparent !important;
     }
 
-    h1, h2, h3 {
-        color: #00843D !important;
-        font-weight: 700;
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--son-green) !important;
+        font-weight: 750 !important;
+        letter-spacing: -0.02em;
+        line-height: 1.25 !important;
+        margin-top: 1.4rem !important;
+        margin-bottom: 0.8rem !important;
     }
-
-    div[data-testid="stMetric"] {
-        background-color: #ffffff;
-        border-left: 5px solid #00843D;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    [data-testid="stMarkdownContainer"] h2,
+    [data-testid="stMarkdownContainer"] h3,
+    [data-testid="stMarkdownContainer"] h4 {
+        padding-bottom: 0.55rem;
+        border-bottom: 1px solid var(--son-border);
     }
-    div[data-testid="stMetric"]:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    p, li, label, [data-testid="stCaptionContainer"],
+    [data-testid="stMarkdownContainer"], [data-testid="stWidgetLabel"] {
+        color: var(--son-ink);
     }
-
-    .stButton > button {
-        background: linear-gradient(135deg, #00843D 0%, #006b31 100%);
-        color: #ffffff;
-        border-radius: 8px;
-        border: none;
-        padding: 0.6rem 1.2rem;
-        font-weight: 600;
-        box-shadow: 0 4px 10px rgba(0, 132, 61, 0.25);
-        transition: all 0.3s ease;
+    [data-testid="stCaptionContainer"] {
+        color: var(--son-muted) !important;
+        font-size: 0.95rem;
+        line-height: 1.6;
     }
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #006b31 0%, #005225 100%);
-        color: #ffffff;
-        box-shadow: 0 6px 14px rgba(0, 132, 61, 0.35);
-    }
-
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div > div {
-        border-radius: 8px;
-        border: 1px solid #ced4da;
-        background-color: #ffffff;
-    }
-    .stTextInput > div > div > input:focus {
-        border-color: #00843D;
-        box-shadow: 0 0 0 2px rgba(0, 132, 61, 0.2);
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] li,
+    [data-testid="stWidgetLabel"] {
+        color: #111827 !important;
+        line-height: 1.6 !important;
     }
 
     [data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #e9ecef;
+        background: #FFFFFF !important;
+        border-right: 1px solid var(--son-border);
+    }
+    [data-testid="stSidebar"] * {
+        color: var(--son-ink);
+    }
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h1,
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h2,
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 {
+        margin-top: 0.6rem !important;
+        padding-bottom: 0.55rem;
+        border-bottom: 1px solid var(--son-border);
+    }
+    [data-testid="stSidebar"] a:hover,
+    [data-testid="stSidebar"] button:hover {
+        background: var(--son-mint) !important;
+        color: var(--son-green) !important;
+    }
+
+    [data-testid="stMetric"],
+    [data-testid="stExpander"],
+    [data-testid="stDataFrame"],
+    [data-testid="stTable"],
+    [data-testid="stAlert"] {
+        background-color: var(--son-card) !important;
+        color: var(--son-ink) !important;
+        border-color: var(--son-border);
+        border-radius: 12px;
+    }
+    [data-testid="stForm"] {
+        background: #FFFFFF !important;
+        border: 1px solid var(--son-border) !important;
+        border-top: 4px solid var(--son-gold) !important;
+        border-radius: 12px !important;
+        padding: 1.25rem !important;
+        box-shadow: 0 4px 14px rgba(0, 80, 40, 0.06);
+    }
+    [data-testid="stMetric"] {
+        border: 1px solid var(--son-border);
+        border-top: 4px solid var(--son-gold);
+        padding: 16px;
+        box-shadow: 0 4px 14px rgba(0, 80, 40, 0.06);
+    }
+    [data-testid="stMetric"] label,
+    [data-testid="stMetric"] [data-testid="stMetricValue"],
+    [data-testid="stMetric"] [data-testid="stMetricLabel"],
+    [data-testid="stMetric"] [data-testid="stMetricDelta"] {
+        color: var(--son-ink) !important;
+    }
+    [data-testid="stMetric"] [data-testid="stMetricValue"] {
+        font-size: 1.8rem;
+        font-weight: 750;
+    }
+    [data-testid="stMetric"] [data-testid="stMetricDelta"] svg {
+        fill: currentColor;
+    }
+    [data-testid="stExpander"] summary,
+    [data-testid="stExpander"] details,
+    [data-testid="stExpander"] details > div {
+        background: #FFFFFF !important;
+        color: var(--son-ink) !important;
+    }
+    [data-testid="stCode"], pre, code {
+        background: #F9FAFB !important;
+        color: var(--son-ink) !important;
+        border-color: var(--son-border) !important;
+    }
+
+    .stButton > button,
+    [data-testid="stFormSubmitButton"] button {
+        background: var(--son-green) !important;
+        color: #FFFFFF !important;
+        border: 1px solid var(--son-green) !important;
+        border-radius: 9px !important;
+        min-height: 42px;
+        font-weight: 700 !important;
+        box-shadow: 0 3px 9px rgba(0, 132, 61, 0.16);
+        transition: background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .stButton > button *,
+    [data-testid="stFormSubmitButton"] button * {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+        stroke: #FFFFFF !important;
+    }
+    .stButton > button:hover,
+    [data-testid="stFormSubmitButton"] button:hover {
+        background: #00964A !important;
+        border-color: #00964A !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 5px 12px rgba(0, 100, 48, 0.2);
+    }
+    .stButton > button:hover *,
+    [data-testid="stFormSubmitButton"] button:hover * {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+        stroke: #FFFFFF !important;
+    }
+    .stButton > button[kind="secondary"],
+    [data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"],
+    [data-testid="stDownloadButton"] button {
+        background: var(--son-mint) !important;
+        color: var(--son-green) !important;
+        border: 1px solid #86EFAC !important;
+        box-shadow: none !important;
+    }
+    .stButton > button[kind="secondary"] *,
+    [data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"] *,
+    [data-testid="stDownloadButton"] button * {
+        color: var(--son-green) !important;
+        fill: var(--son-green) !important;
+        stroke: var(--son-green) !important;
+    }
+    .stButton > button[kind="secondary"]:hover,
+    [data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"]:hover,
+    [data-testid="stDownloadButton"] button:hover {
+        background: #DCFCE7 !important;
+        border-color: var(--son-green) !important;
+    }
+
+    .stTextInput [data-baseweb="input"],
+    .stTextArea [data-baseweb="textarea"],
+    .stNumberInput [data-baseweb="input"],
+    .stDateInput [data-baseweb="input"],
+    .stTimeInput [data-baseweb="input"],
+    [data-baseweb="select"] > div {
+        background: #F9FAFB !important;
+        border: 1.5px solid #B8D9C1 !important;
+        border-radius: 9px !important;
+        color: var(--son-ink) !important;
+        box-shadow: none !important;
+    }
+    .stTextInput input, .stTextArea textarea, .stNumberInput input,
+    .stDateInput input, .stTimeInput input,
+    [data-baseweb="select"] *, [data-baseweb="input"] input,
+    [data-baseweb="textarea"] textarea {
+        background: transparent !important;
+        color: var(--son-ink) !important;
+        -webkit-text-fill-color: var(--son-ink) !important;
+    }
+    .stTextInput input::placeholder, .stTextArea textarea::placeholder,
+    .stNumberInput input::placeholder {
+        color: #718078 !important;
+        -webkit-text-fill-color: #718078 !important;
+        opacity: 1;
+    }
+    .stTextInput [data-baseweb="input"]:focus-within,
+    .stTextArea [data-baseweb="textarea"]:focus-within,
+    .stNumberInput [data-baseweb="input"]:focus-within,
+    .stDateInput [data-baseweb="input"]:focus-within,
+    .stTimeInput [data-baseweb="input"]:focus-within,
+    [data-baseweb="select"] > div:focus-within {
+        border-color: var(--son-green) !important;
+        box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.14) !important;
+        background: #FFFFFF !important;
+    }
+    [data-baseweb="popover"], [data-baseweb="menu"], [role="listbox"],
+    [role="option"], [data-testid="stDateInput"] [data-baseweb="calendar"] {
+        background: #FFFFFF !important;
+        color: #111827 !important;
+    }
+    [data-baseweb="menu"] [role="option"],
+    [role="listbox"] [role="option"] {
+        color: #064E3B !important;
+        line-height: 1.6 !important;
+    }
+    [data-baseweb="menu"] [role="option"]:hover,
+    [role="listbox"] [role="option"]:hover,
+    [data-baseweb="menu"] [role="option"][aria-selected="true"],
+    [role="listbox"] [role="option"][aria-selected="true"] {
+        background: #F0FDF4 !important;
+        color: #00843D !important;
+    }
+
+    [data-testid="stRadio"] {
+        margin: 0.65rem 0 1rem;
+    }
+    [data-testid="stRadio"] [role="radiogroup"] {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center;
+        gap: 10px 16px !important;
+        padding: 0.7rem 0.85rem !important;
+        background: #F0FDF4 !important;
+        border: 1px solid #BFE7CC !important;
+        border-radius: 10px !important;
+        line-height: 1.6 !important;
+    }
+    [data-testid="stRadio"] [role="radiogroup"] label {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        margin: 0 !important;
+        padding: 0.35rem 0.6rem !important;
+        color: #064E3B !important;
+        background: transparent !important;
+        border: 1px solid transparent !important;
+        border-radius: 8px !important;
+        font-size: 1rem !important;
+        line-height: 1.6 !important;
+    }
+    [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked),
+    [data-testid="stRadio"] [role="radiogroup"] label:has([aria-checked="true"]) {
+        color: #064E3B !important;
+        background: #FFFFFF !important;
+        border-color: #86EFAC !important;
+        box-shadow: 0 1px 4px rgba(0, 132, 61, 0.08);
+    }
+    [data-testid="stRadio"] input[type="radio"],
+    [data-testid="stRadio"] [role="radio"] {
+        accent-color: #00843D !important;
+        color: #00843D !important;
+    }
+    [data-testid="stRadio"] svg {
+        color: #00843D !important;
+        fill: #00843D !important;
+    }
+    [data-testid="stRadio"] label p,
+    [data-testid="stRadio"] label span {
+        color: #064E3B !important;
+    }
+
+    [data-testid="stSelectbox"] [data-baseweb="select"] > div,
+    [data-testid="stMultiSelect"] [data-baseweb="select"] > div {
+        background: #F0FDF4 !important;
+        border: 1px solid #86EFAC !important;
+        color: #064E3B !important;
+    }
+    [data-testid="stSelectbox"] [data-baseweb="select"] *,
+    [data-testid="stMultiSelect"] [data-baseweb="select"] * {
+        color: #064E3B !important;
+    }
+    [data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within,
+    [data-testid="stMultiSelect"] [data-baseweb="select"] > div:focus-within {
+        border-color: #00843D !important;
+        box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.14) !important;
+    }
+
+    [data-testid="stToggle"] {
+        padding: 0.55rem 0.7rem;
+        margin: 0.4rem 0;
+        background: #F0FDF4;
+        border: 1px solid #D5E5D9;
+        border-radius: 10px;
+    }
+    [data-testid="stToggle"] label,
+    [data-testid="stToggle"] label p,
+    [data-testid="stToggle"] [data-testid="stWidgetLabel"] {
+        color: #064E3B !important;
+        font-size: 1rem !important;
+        line-height: 1.6 !important;
+    }
+    [data-testid="stToggle"] [role="switch"],
+    [data-testid="stToggle"] button[role="switch"] {
+        background: #D9E9DE !important;
+        border: 1px solid #86EFAC !important;
+        box-shadow: none !important;
+    }
+    [data-testid="stToggle"] [role="switch"][aria-checked="true"],
+    [data-testid="stToggle"] button[role="switch"][aria-checked="true"] {
+        background: #00843D !important;
+        border-color: #00843D !important;
+    }
+    input[type="checkbox"], input[type="radio"] {
+        accent-color: #00843D !important;
+    }
+
+    [data-testid="stTabs"] [role="tablist"] {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 16px !important;
+        padding: 0.6rem 0.2rem 0.75rem !important;
+        margin: 0 0 1.35rem !important;
+        border-bottom: 1px solid var(--son-border);
+        line-height: 1.6 !important;
+        overflow: visible !important;
+    }
+    [data-testid="stTabs"] button[role="tab"] {
+        color: var(--son-muted) !important;
+        background: transparent !important;
+        padding: 0.65rem 0.85rem !important;
+        margin: 0 !important;
+        border-radius: 8px 8px 0 0 !important;
+        white-space: normal !important;
+        line-height: 1.5 !important;
+        font-size: 0.98rem !important;
+        font-weight: 650 !important;
+    }
+    [data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+        color: var(--son-green) !important;
+        border-bottom: 3px solid var(--son-gold) !important;
+        background: #F0FDF4 !important;
+    }
+    [data-testid="stTabs"] [data-testid="stMarkdownContainer"] {
+        padding-top: 0.25rem;
+    }
+    [data-testid="stDataFrame"] *, [data-testid="stTable"] * {
+        color: var(--son-ink);
+    }
+    [data-testid="stDataFrame"],
+    [data-testid="stTable"] {
+        border: 1px solid var(--son-border);
+        box-shadow: 0 4px 14px rgba(0, 80, 40, 0.05);
+        overflow: hidden;
+    }
+    [data-testid="stDataFrame"] [role="columnheader"],
+    [data-testid="stTable"] thead th {
+        background: var(--son-mint) !important;
+        color: var(--son-ink) !important;
+        font-weight: 700 !important;
+        border-bottom: 1px solid var(--son-border) !important;
+    }
+    [data-testid="stDataFrame"] [role="gridcell"],
+    [data-testid="stTable"] tbody td {
+        background: #FFFFFF !important;
+        color: var(--son-ink) !important;
+        border-color: var(--son-border) !important;
+    }
+    [data-testid="stVegaLiteChart"],
+    [data-testid="stArrowVegaLiteChart"],
+    [data-testid="stLineChart"],
+    [data-testid="stAreaChart"],
+    [data-testid="stBarChart"],
+    [data-testid="stScatterChart"],
+    [data-testid="stPlotlyChart"] {
+        background: #FFFFFF !important;
+        border: 1px solid var(--son-border);
+        border-top: 3px solid var(--son-gold);
+        border-radius: 12px;
+        padding: 0.5rem;
+        box-shadow: 0 4px 14px rgba(0, 80, 40, 0.05);
+    }
+    [data-testid="stVegaLiteChart"] svg text,
+    [data-testid="stArrowVegaLiteChart"] svg text,
+    [data-testid="stLineChart"] svg text,
+    [data-testid="stAreaChart"] svg text,
+    [data-testid="stBarChart"] svg text {
+        fill: var(--son-ink) !important;
+    }
+    [data-testid="stVegaLiteChart"] svg line,
+    [data-testid="stArrowVegaLiteChart"] svg line,
+    [data-testid="stLineChart"] svg line,
+    [data-testid="stAreaChart"] svg line,
+    [data-testid="stBarChart"] svg line {
+        stroke: #DCE7DF;
+    }
+    [data-testid="stVegaLiteChart"] iframe,
+    [data-testid="stArrowVegaLiteChart"] iframe,
+    [data-testid="stPlotlyChart"] iframe {
+        background: #FFFFFF !important;
+        color-scheme: light;
+    }
+    [data-testid="stAlert"] * {
+        color: var(--son-ink);
+    }
+    a { color: var(--son-green) !important; }
+
+    .son-sidebar-brand {
+        padding: 0.35rem 0 1rem;
+        border-bottom: 1px solid var(--son-border);
+        margin-bottom: 1rem;
+    }
+    .son-sidebar-brand strong {
+        display: block;
+        color: var(--son-green);
+        font-size: 1.15rem;
+        font-weight: 800;
+    }
+    .son-sidebar-brand span {
+        color: var(--son-muted);
+        font-size: 0.76rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+    .son-user-card {
+        padding: 0.85rem 0.9rem;
+        margin: 0.65rem 0 1rem;
+        background: var(--son-mint);
+        border: 1px solid var(--son-border);
+        border-left: 4px solid var(--son-gold);
+        border-radius: 10px;
+    }
+    .son-user-card strong, .son-user-card span {
+        display: block;
+        color: var(--son-ink);
+        overflow-wrap: anywhere;
+    }
+    .son-user-card span {
+        margin-top: 0.2rem;
+        color: var(--son-muted);
+        font-size: 0.82rem;
+    }
+    .son-page-header {
+        padding: 1.45rem 1.6rem;
+        margin: 0.35rem 0 1.5rem;
+        background: #FFFFFF;
+        border: 1px solid var(--son-border);
+        border-top: 5px solid var(--son-gold);
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0, 80, 40, 0.06);
+    }
+    .son-page-header .eyebrow {
+        margin-bottom: 0.3rem;
+        color: var(--son-green);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        line-height: 1.6;
+    }
+    .son-page-header h1 {
+        margin: 0;
+        color: var(--son-ink) !important;
+        font-size: clamp(1.5rem, 3vw, 2.15rem);
+    }
+    .son-page-header p {
+        margin: 0.45rem 0 0;
+        color: var(--son-muted);
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+    [data-testid="stMain"] .block-container {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+    [data-testid="stMain"] [data-testid="stVerticalBlock"] > div {
+        line-height: 1.6;
+    }
+    [data-testid="stMain"] [data-testid="stTabs"] {
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+        [data-testid="stMain"] .block-container {
+            padding: 1.25rem 1rem 2rem;
+        }
+        .son-page-header {
+            padding: 1.1rem;
+        }
     }
 </style>
 """
@@ -94,89 +537,136 @@ ETHIO_TELECOM_CUSTOM_STYLE = """
 ETHIO_TELECOM_LOGIN_STYLE = """
 <style>
     .stApp {
-        background: linear-gradient(135deg, #00843D 0%, #005c2a 50%, #003317 100%);
-        font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+        background: linear-gradient(135deg, #F4F8F5 0%, #E6F0E9 100%) !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
 
-    header, footer {
-        visibility: hidden;
-    }
-
-    div[data-testid="stForm"] {
-        max-width: 440px;
-        margin: auto;
-        padding: 35px 30px;
-        border: 1px solid #d2e3d5;
-        border-top: 8px solid #FFC72C;
-        border-radius: 16px;
-        background-color: #ffffff;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    div[data-testid="stForm"]:has(.login-header) {
+        max-width: 450px !important;
+        margin: auto !important;
+        padding: 40px 35px !important;
+        border: 1px solid #D5E5D9 !important;
+        border-top: 8px solid #FFC72C !important;
+        border-radius: 16px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 14px 34px rgba(0, 80, 40, 0.1) !important;
     }
 
     .login-header {
-        margin-bottom: 20px;
+        margin-bottom: 26px;
         text-align: center;
     }
     .login-title {
-        color: #ffffff;
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-        margin-bottom: 4px;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        color: #00843D !important;
+        font-size: 30px !important;
+        font-weight: 900 !important;
+        letter-spacing: -0.5px !important;
+        margin-bottom: 5px !important;
     }
     .login-subtitle {
-        color: #FFC72C;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        color: #52645A !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.7px !important;
     }
 
-    div[data-testid="stForm"] label,
-    div[data-testid="stForm"] [data-testid="stWidgetLabel"] {
-        color: #1f2d24 !important;
+    div[data-testid="stForm"]:has(.login-header) label,
+    div[data-testid="stForm"]:has(.login-header) label p,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stWidgetLabel"] {
+        color: #111827 !important;
         font-size: 14px !important;
         font-weight: 700 !important;
+        margin-bottom: 6px !important;
     }
 
-    div[data-testid="stForm"] .stTextInput > div > div > input {
-        padding: 10px 14px !important;
-        border: 1.5px solid #a3c4aa !important;
-        border-radius: 8px !important;
-        background-color: #f8faf8 !important;
-        color: #1f2d24 !important;
-        font-size: 14px !important;
+    div[data-testid="stForm"]:has(.login-header) .stTextInput [data-baseweb="input"] {
+        background: #F9FAFB !important;
+        border: 1.5px solid #B8D9C1 !important;
+        border-radius: 9px !important;
     }
-    div[data-testid="stForm"] .stTextInput > div > div > input:focus {
-        border-color: #00843D !important;
-        box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.2) !important;
-        background-color: #ffffff !important;
-    }
-
-    div[data-testid="stForm"] .stButton > button {
-        width: 100%;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        padding: 12px 0;
+    div[data-testid="stForm"]:has(.login-header) .stTextInput input {
+        padding: 12px 14px !important;
         border: none !important;
-        border-radius: 8px !important;
-        background: linear-gradient(135deg, #00843D 0%, #00662f 100%) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        color: #ffffff !important;
-        font-size: 16px !important;
-        font-weight: 700 !important;
-        transition: all 0.3s ease;
+        background-color: transparent !important;
+        color: #26352B !important;
+        -webkit-text-fill-color: #26352B !important;
+        font-size: 15px !important;
     }
-    div[data-testid="stForm"] .stButton > button:hover {
-        transform: translateY(-1px);
-        background: linear-gradient(135deg, #00662f 0%, #004d23 100%) !important;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    div[data-testid="stForm"]:has(.login-header) .stTextInput [data-baseweb="input"]:focus-within {
+        border-color: #00843D !important;
+        box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.14) !important;
+        background: #FFFFFF !important;
     }
 
-    div[data-testid="stForm"] hr {
-        margin: 15px 0 10px;
-        border-color: #e1e8e3;
+    div[data-testid="stForm"]:has(.login-header) .stButton > button,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stFormSubmitButton"] button:not([kind="secondaryFormSubmit"]) {
+        width: 100% !important;
+        margin-top: 9px !important;
+        margin-bottom: 12px !important;
+        padding: 12px 14px !important;
+        border: 1px solid #00843D !important;
+        border-radius: 9px !important;
+        background: #00843D !important;
+        box-shadow: 0 4px 10px rgba(0, 132, 61, 0.16) !important;
+        color: #FFFFFF !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        transition: background-color 0.18s ease, box-shadow 0.18s ease !important;
+    }
+    div[data-testid="stForm"]:has(.login-header) .stButton > button *,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stFormSubmitButton"] button:not([kind="secondaryFormSubmit"]) * {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+        stroke: #FFFFFF !important;
+    }
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] [data-testid="stFormSubmitButton"] button,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] button,
+    div[data-testid="stForm"]:has(.login-header) button[kind="secondaryFormSubmit"] {
+        border: 1px solid #86EFAC !important;
+        background: #F0FDF4 !important;
+        box-shadow: none !important;
+        color: #00843D !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] [data-testid="stFormSubmitButton"] button *,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] button *,
+    div[data-testid="stForm"]:has(.login-header) button[kind="secondaryFormSubmit"] * {
+        color: #00843D !important;
+        fill: #00843D !important;
+        stroke: #00843D !important;
+        font-weight: 700 !important;
+    }
+    div[data-testid="stForm"]:has(.login-header) .stButton > button:not([kind="secondaryFormSubmit"]):hover,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stFormSubmitButton"] button:not([kind="secondaryFormSubmit"]):hover {
+        background: #00964A !important;
+        border-color: #00964A !important;
+        color: #FFFFFF !important;
+    }
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] [data-testid="stFormSubmitButton"] button:hover,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] button:hover,
+    div[data-testid="stForm"]:has(.login-header) button[kind="secondaryFormSubmit"]:hover {
+        background: #DCFCE7 !important;
+        border-color: #4ADE80 !important;
+        color: #006B32 !important;
+    }
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] [data-testid="stFormSubmitButton"] button:hover *,
+    div[data-testid="stForm"]:has(.login-header) [data-testid="stHorizontalBlock"] button:hover *,
+    div[data-testid="stForm"]:has(.login-header) button[kind="secondaryFormSubmit"]:hover * {
+        color: #006B32 !important;
+        fill: #006B32 !important;
+        stroke: #006B32 !important;
+    }
+
+    div[data-testid="stForm"]:has(.login-header) hr {
+        margin: 16px 0 !important;
+        border-color: #D5E5D9 !important;
+    }
+    @media (max-width: 640px) {
+        div[data-testid="stForm"]:has(.login-header) {
+            padding: 30px 22px !important;
+        }
     }
 </style>
 """
@@ -226,6 +716,7 @@ def api_request(
 
 def login_panel() -> None:
     """Authenticate a named user and keep the short-lived token session-scoped."""
+    st.session_state.setdefault("authenticated", False)
     st.markdown(ETHIO_TELECOM_LOGIN_STYLE, unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -254,6 +745,7 @@ def login_panel() -> None:
             with utility_col2:
                 noc_support = st.form_submit_button("NOC Support")
     if submitted:
+        st.session_state["authenticated"] = False
         try:
             response = requests.post(
                 f"{API_URL}/v1/auth/login",
@@ -262,9 +754,17 @@ def login_panel() -> None:
             )
             response.raise_for_status()
             auth = response.json()
+            if (
+                not isinstance(auth, dict)
+                or not isinstance(auth.get("access_token"), str)
+                or not auth["access_token"]
+                or not isinstance(auth.get("role"), str)
+            ):
+                raise ValueError("Authentication response is missing required fields.")
             st.session_state["son_token"] = auth["access_token"]
             st.session_state["son_role"] = auth["role"]
             st.session_state["son_username"] = username
+            st.session_state["authenticated"] = True
             st.rerun()
         except requests.RequestException as exc:
             if exc.response is None:
@@ -283,6 +783,7 @@ def login_panel() -> None:
                     "Check API readiness and server logs."
                 )
         except (KeyError, ValueError):
+            st.session_state["authenticated"] = False
             st.error("Authentication service returned an invalid response.")
     elif forgot_pwd:
         st.info("Contact your system administrator to reset your password.")
@@ -691,7 +1192,7 @@ def _build_pdf_report(dataframe: pd.DataFrame) -> bytes:
     table.setStyle(
         TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#16324F")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#00843D")),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                 ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                 ("FONTSIZE", (0, 0), (-1, -1), 7),
@@ -870,16 +1371,30 @@ def main() -> None:
     )
     st.markdown(ETHIO_TELECOM_CUSTOM_STYLE, unsafe_allow_html=True)
     token = st.session_state.get("son_token")
-    if not token:
+    if not token or not st.session_state.get("authenticated", False):
         login_panel()
         return
 
     username = st.session_state["son_username"]
     role = st.session_state["son_role"]
     with st.sidebar:
-        st.markdown("### Network Operations")
-        st.write(username)
-        st.caption(role.replace("_", " ").title())
+        st.markdown(
+            """
+            <div class="son-sidebar-brand">
+                <strong>ethio telecom</strong>
+                <span>SON Operations</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            (
+                '<div class="son-user-card"><strong>'
+                f"{html.escape(username)}</strong><span>"
+                f"{html.escape(role.replace('_', ' ').title())}</span></div>"
+            ),
+            unsafe_allow_html=True,
+        )
         live_mode = st.toggle(
             "Live Simulation Mode",
             value=False,
@@ -888,12 +1403,20 @@ def main() -> None:
         if st.button("Refresh telemetry"):
             st.rerun()
         if st.button("Sign out"):
-            for key in ("son_token", "son_role", "son_username"):
+            for key in ("authenticated", "son_token", "son_role", "son_username"):
                 st.session_state.pop(key, None)
             st.rerun()
 
-    st.title("Ethio Telecom Self-Optimizing Network")
-    st.caption("Operational telemetry and audited configuration workflows")
+    st.markdown(
+        """
+        <div class="son-page-header">
+            <div class="eyebrow">ethio telecom · Network Operations</div>
+            <h1>Self-Organizing Network</h1>
+            <p>Operational telemetry, network health, and audited configuration workflows.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     try:
         health = requests.get(f"{API_URL}/health/ready", timeout=(2, 3))
         health.raise_for_status()
