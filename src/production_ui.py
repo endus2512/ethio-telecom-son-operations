@@ -94,7 +94,7 @@ ETHIO_TELECOM_CUSTOM_STYLE = """
 ETHIO_TELECOM_LOGIN_STYLE = """
 <style>
     .stApp {
-        background: linear-gradient(135deg, #eef5f0 0%, #d8e8dd 100%);
+        background: linear-gradient(135deg, #00843D 0%, #005c2a 50%, #003317 100%);
         font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
     }
 
@@ -106,12 +106,11 @@ ETHIO_TELECOM_LOGIN_STYLE = """
         max-width: 440px;
         margin: auto;
         padding: 35px 30px;
-        border: 1px solid #d4e3d7;
-        border-top: 8px solid #00843D;
+        border: 1px solid #d2e3d5;
+        border-top: 8px solid #FFC72C;
         border-radius: 16px;
         background-color: #ffffff;
-        box-shadow: 0 12px 30px rgba(0, 132, 61, 0.15),
-            0 4px 12px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     }
 
     .login-header {
@@ -119,59 +118,60 @@ ETHIO_TELECOM_LOGIN_STYLE = """
         text-align: center;
     }
     .login-title {
-        color: #00843D;
-        font-size: 26px;
+        color: #ffffff;
+        font-size: 28px;
         font-weight: 800;
         letter-spacing: -0.5px;
         margin-bottom: 4px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     .login-subtitle {
-        color: #4a574d;
+        color: #FFC72C;
         font-size: 13px;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    div[data-testid="stForm"] label,
+    div[data-testid="stForm"] [data-testid="stWidgetLabel"] {
+        color: #1f2d24 !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
     }
 
     div[data-testid="stForm"] .stTextInput > div > div > input {
-        padding: 10px 14px;
-        border: 1.5px solid #c5d3c8;
-        border-radius: 8px;
-        background-color: #fcfdfe;
-        font-size: 14px;
+        padding: 10px 14px !important;
+        border: 1.5px solid #a3c4aa !important;
+        border-radius: 8px !important;
+        background-color: #f8faf8 !important;
+        color: #1f2d24 !important;
+        font-size: 14px !important;
     }
     div[data-testid="stForm"] .stTextInput > div > div > input:focus {
-        border-color: #00843D;
-        box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.18);
+        border-color: #00843D !important;
+        box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.2) !important;
+        background-color: #ffffff !important;
     }
 
     div[data-testid="stForm"] .stButton > button {
         width: 100%;
         margin-top: 10px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         padding: 12px 0;
-        border: none;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #b9ddc2 0%, #a5d1b1 100%);
-        box-shadow: 0 4px 12px rgba(63, 125, 82, 0.18);
-        color: #17452a;
-        font-size: 16px;
-        font-weight: 700;
+        border: none !important;
+        border-radius: 8px !important;
+        background: linear-gradient(135deg, #00843D 0%, #00662f 100%) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        color: #ffffff !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
         transition: all 0.3s ease;
     }
     div[data-testid="stForm"] .stButton > button:hover {
         transform: translateY(-1px);
-        background: linear-gradient(135deg, #a5d1b1 0%, #91c5a0 100%);
-        box-shadow: 0 6px 16px rgba(63, 125, 82, 0.24);
-        color: #17452a;
-    }
-    div[data-testid="stForm"] button[kind="primaryFormSubmit"] {
-        background: linear-gradient(135deg, #ffe9a8 0%, #ffd66e 100%) !important;
-        box-shadow: 0 4px 12px rgba(115, 83, 0, 0.2);
-        color: #17452a !important;
-    }
-    div[data-testid="stForm"] button[kind="primaryFormSubmit"]:hover {
-        background: linear-gradient(135deg, #ffdc7a 0%, #f4c34b 100%) !important;
-        box-shadow: 0 6px 16px rgba(115, 83, 0, 0.26);
-        color: #17452a !important;
+        background: linear-gradient(135deg, #00662f 0%, #004d23 100%) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     }
 
     div[data-testid="stForm"] hr {
