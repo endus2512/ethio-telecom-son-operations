@@ -11,3 +11,5 @@ services:
         value: sqlite:///./son-local.db
       - key: SON_JWT_SECRET
         generateValue: true
+      - key: SON_INGESTION_API_TOKEN
+        generateValue: true
