@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-dev.txt
+      - name: Python compilation
+        run: python -m py_compile src/*.py app.py
+      - name: Run unit tests
+        run: python -m pytest tests/ -v
+      - name: Validate startup script
+        run: bash -n run_local.sh
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Docker Compose
+        run: |
+          cp .env.example .env
+          printf 'POSTGRES_PASSWORD=%s\n' "$(openssl rand -hex 32)" >> .env
+          printf 'SON_JWT_SECRET=%s\n' "$(openssl rand -hex 32)" >> .env
+          printf 'SON_INGESTION_API_TOKEN=%s\n' "$(openssl rand -hex 32)" >> .env
+          docker compose config --quiet
+      - name: Build backend image
+        run: docker compose build backend
+      - name: Build frontend image
+        run: docker compose build frontend
